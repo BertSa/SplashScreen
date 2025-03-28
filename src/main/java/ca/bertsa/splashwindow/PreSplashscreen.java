@@ -27,8 +27,10 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
     public static final String MOD_ID = "splashscreen";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "/option.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    public static final Path CONFIG_DIR = FabricLoader.getInstance().getConfigDir();
+    private static final Path CONFIG_PATH = CONFIG_DIR.resolve(MOD_ID + "/option.json");
+    public static final Path imagePath = CONFIG_DIR.resolve(MOD_ID + "/" + PNG_NAME);
 
     private static final boolean DEFAULT_CUSTOMSIZE = false;
     private static final boolean DEFAULT_PRECISE = false;
@@ -58,8 +60,8 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         frame = new JFrame("Minecraft");
 
         BufferedImage bi;
-        if (Files.exists(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "/" + PNG_NAME))) {
-            File file = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "/" + PNG_NAME).toFile();
+        if (Files.exists(imagePath)) {
+            File file = imagePath.toFile();
             bi = ImageIO.read(file);
         } else {
             InputStream stream = PreSplashscreen.class.getResourceAsStream("/assets/" + PNG_NAME);
