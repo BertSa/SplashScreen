@@ -1,6 +1,6 @@
-package ca.bertsa.splashwindow;
+package ca.bertsa.splashscreen;
 
-import ca.bertsa.splashwindow.SplashScreenConfig.SplashConfig;
+import ca.bertsa.splashscreen.SplashScreenConfig.SplashConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         LOGGER.info("Pre Launch");
 
         SplashScreenConfig.loadConfig();
-        config = SplashScreenConfig.getConf();
+        config = SplashScreenConfig.getConfig();
         try {
             this.initSplashscreen();
         } catch (Exception ignored) {
@@ -51,26 +51,28 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
             File file = IMAGE_PATH.toFile();
             bi = ImageIO.read(file);
         } else {
-            InputStream stream = PreSplashscreen.class.getResourceAsStream("/assets/" + PNG_NAME);
+            InputStream stream = PreSplashscreen.class.getResourceAsStream("/assets/" + MOD_ID + "/" + PNG_NAME);
             assert stream != null;
             bi = ImageIO.read(stream);
         }
 
         int h;
         int w;
-        if (config.customSize) {
-            if (config.precise) {
+        switch (config.state) {
+            case Precise:
                 h = config.height;
                 w = config.width;
-            } else {
+                break;
+            case Multiply:
                 h = Math.round(bi.getHeight() * config.multiplier);
                 w = Math.round(bi.getWidth() * config.multiplier);
-            }
-        } else {
-            h = config.height = bi.getHeight();
-            w = config.width = bi.getWidth();
-
+                break;
+            default:
+                h = config.height = bi.getHeight();
+                w = config.width = bi.getWidth();
         }
+
+        LOGGER.info(h + "x" + w);
 
         ImageIcon img = new ImageIcon(bi.getScaledInstance(w, h, Image.SCALE_SMOOTH));
 

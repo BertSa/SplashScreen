@@ -1,4 +1,4 @@
-package ca.bertsa.splashwindow;
+package ca.bertsa.splashscreen;
 
 import net.fabricmc.api.ModInitializer;
 

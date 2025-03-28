@@ -22,6 +22,8 @@ loom {
 }
 
 repositories {
+    maven { url "https://maven.shedaniel.me/" }
+    maven { url "https://maven.terraformersmc.com/releases/" }
 }
 
 dependencies {
@@ -30,6 +32,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    include(modApi "me.shedaniel.cloth:cloth-config-fabric:17.0.144")
+    modApi "com.terraformersmc:modmenu:13.0.3"
 }
 
 processResources {
@@ -45,20 +49,15 @@ processResources {
     }
 }
 
-def targetJavaVersion = 21
 tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        it.options.release.set(targetJavaVersion)
-    }
+    it.options.release = 21
 }
 
 java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
     withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {

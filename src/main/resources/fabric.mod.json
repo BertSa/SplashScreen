@@ -4,22 +4,28 @@
   "version": "${version}",
   "name": "SplashWindow",
   "description": "",
-  "authors": [],
+  "authors": ["Samuel Bertrand"],
   "contact": {},
   "license": "MIT",
-  "icon": "assets/icon.png",
+  "icon": "assets/splashscreen/icon.png",
   "environment": "client",
   "entrypoints": {
     "preLaunch": [
-      "ca.bertsa.splashwindow.PreSplashscreen"
+      "ca.bertsa.splashscreen.PreSplashscreen"
     ],
     "main": [
-      "ca.bertsa.splashwindow.Splashscreen"
+      "ca.bertsa.splashscreen.Splashscreen"
+    ],
+    "modmenu": [
+      "ca.bertsa.splashscreen.ModMenuIntegration"
     ]
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}"
+  },
+  "suggests": {
+    "mod-menu": "~13.0.2"
   }
 }
