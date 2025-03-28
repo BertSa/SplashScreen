@@ -1,11 +1,10 @@
 package ca.bertsa.splashwindow;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.Window.Type;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PreSplashscreen implements PreLaunchEntrypoint {
+    private static final String PNG_NAME = "splash.png";
     public static final String MOD_ID = "splashscreen";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -32,6 +32,7 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
 
     private static int width = 500;
     private static int height = 100;
+    private static boolean customSize = false;
 
     public static JFrame frame;
 
@@ -43,24 +44,28 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         }
 
     }
+
     private void initSplashscreen() throws IOException {
-//        loadConfig();
+        loadConfig();
 
         frame = new JFrame("Minecraft");
 
-        ImageIcon img;
-        if (!Files.exists(FabricLoader.getInstance().getConfigDir().resolve("splashscreen/splash.png"))) {
-//            InputStream stream = FabricLoader.class.getClassLoader().getResourceAsStream("assets/splash.png");
-            InputStream stream = PreSplashscreen.class.getResourceAsStream("/assets/splash.png");
-            LOGGER.info("Loading asset splash.png");
-            assert stream != null;
-            img = new ImageIcon(ImageIO.read(stream).getScaledInstance(500, 100, 4));
+        BufferedImage bi;
+        if (Files.exists(FabricLoader.getInstance().getConfigDir().resolve("splashscreen/" + PNG_NAME))) {
+            File file = FabricLoader.getInstance().getConfigDir().resolve("splashscreen/" + PNG_NAME).toFile();
+            bi = ImageIO.read(file);
         } else {
-            File stream = FabricLoader.getInstance().getConfigDir().resolve("splashscreen/splash.png").toFile();
-            img = new ImageIcon(ImageIO.read(stream).getScaledInstance(500, 100, 4));
-            LOGGER.info("Loading splash.png");
-
+            InputStream stream = PreSplashscreen.class.getResourceAsStream("/assets/" + PNG_NAME);
+            assert stream != null;
+            bi = ImageIO.read(stream);
         }
+
+        if (!customSize) {
+            height = bi.getHeight();
+            width = bi.getWidth();
+        }
+
+        ImageIcon img = new ImageIcon(bi.getScaledInstance(width, height, 4));
 
         JLabel label = new JLabel("", 0);
         label.setBackground(new Color(0, 0, 0, 0));
@@ -80,7 +85,7 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         frame.setBackground(new Color(1.0F, 1.0F, 1.0F, 0.0F));
         frame.setContentPane(label);
         frame.setSize(width, height);
-        frame.setLocationRelativeTo((Component) null);
+        frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setAlwaysOnTop(true);
         frame.setVisible(true);
@@ -98,6 +103,7 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
             if (data != null) {
                 height = data.height;
                 width = data.width;
+                customSize = data.customSize;
             }
         } catch (IOException e) {
             LOGGER.error("Failed to load config", e);
@@ -109,6 +115,7 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         Data data = new Data();
         data.height = height;
         data.width = width;
+        data.customSize = customSize;
         return data;
     }
 
@@ -123,6 +130,7 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
     }
 
     private static class Data {
+        public boolean customSize;
         int height;
         int width;
     }
