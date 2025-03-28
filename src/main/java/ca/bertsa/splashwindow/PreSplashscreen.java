@@ -1,5 +1,13 @@
 package ca.bertsa.splashwindow;
 
+import ca.bertsa.splashwindow.SplashScreenConfig.SplashConfig;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.Window.Type;
 import java.awt.event.MouseAdapter;
@@ -10,43 +18,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PreSplashscreen implements PreLaunchEntrypoint {
-    private static final String PNG_NAME = "splash.png";
     public static final String MOD_ID = "splashscreen";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final Path CONFIG_DIR = FabricLoader.getInstance().getConfigDir();
-    private static final Path CONFIG_PATH = CONFIG_DIR.resolve(MOD_ID + "/option.json");
-    public static final Path imagePath = CONFIG_DIR.resolve(MOD_ID + "/" + PNG_NAME);
 
-    private static final boolean DEFAULT_CUSTOMSIZE = false;
-    private static final boolean DEFAULT_PRECISE = false;
-    private static final float DEFAULT_MULTIPLIER = 1;
-
-
-    private static int width;
-    private static int height;
-    private static boolean customSize = DEFAULT_CUSTOMSIZE;
-    private static boolean precise = DEFAULT_PRECISE;
-    private static float multiplier = DEFAULT_MULTIPLIER;
+    private static final String PNG_NAME = "splash.png";
+    private static final Path IMAGE_PATH = CONFIG_DIR.resolve(MOD_ID + "/" + PNG_NAME);
 
     public static JFrame frame;
 
+    private SplashConfig config;
+
     public void onPreLaunch() {
         LOGGER.info("Pre Launch");
+
+        SplashScreenConfig.loadConfig();
+        config = SplashScreenConfig.getConf();
         try {
             this.initSplashscreen();
         } catch (Exception ignored) {
@@ -55,13 +44,11 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
     }
 
     private void initSplashscreen() throws IOException {
-        loadConfig();
-
         frame = new JFrame("Minecraft");
 
         BufferedImage bi;
-        if (Files.exists(imagePath)) {
-            File file = imagePath.toFile();
+        if (Files.exists(IMAGE_PATH)) {
+            File file = IMAGE_PATH.toFile();
             bi = ImageIO.read(file);
         } else {
             InputStream stream = PreSplashscreen.class.getResourceAsStream("/assets/" + PNG_NAME);
@@ -69,19 +56,27 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
             bi = ImageIO.read(stream);
         }
 
-        if (!customSize) {
-            height = bi.getHeight();
-            width = bi.getWidth();
-        } else if (!precise) {
-            height = Math.round(bi.getHeight() * multiplier);
-            width = Math.round(bi.getWidth() * multiplier);
+        int h;
+        int w;
+        if (config.customSize) {
+            if (config.precise) {
+                h = config.height;
+                w = config.width;
+            } else {
+                h = Math.round(bi.getHeight() * config.multiplier);
+                w = Math.round(bi.getWidth() * config.multiplier);
+            }
+        } else {
+            h = config.height = bi.getHeight();
+            w = config.width = bi.getWidth();
+
         }
 
-        ImageIcon img = new ImageIcon(bi.getScaledInstance(width, height, 4));
+        ImageIcon img = new ImageIcon(bi.getScaledInstance(w, h, Image.SCALE_SMOOTH));
 
-        JLabel label = new JLabel("", 0);
+        JLabel label = new JLabel("", SwingConstants.CENTER);
         label.setBackground(new Color(0, 0, 0, 0));
-        label.setSize(width, height);
+        label.setSize(w, h);
         label.setIcon(img);
         label.setOpaque(true);
 
@@ -92,66 +87,17 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         frame.addMouseMotionListener(frameDragListener);
 
         frame.setType(Type.UTILITY);
-        frame.setDefaultCloseOperation(3);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setSize(w, h);
         frame.setUndecorated(true);
         frame.setBackground(new Color(1.0F, 1.0F, 1.0F, 0.0F));
         frame.setContentPane(label);
-        frame.setSize(width, height);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setAlwaysOnTop(true);
         frame.setVisible(true);
     }
 
-    public static void loadConfig() {
-        if (!Files.exists(CONFIG_PATH)) {
-            LOGGER.info("Creating config file");
-            saveConfig();
-            return;
-        }
-        try {
-            String json = Files.readString(CONFIG_PATH);
-            Data data = GSON.fromJson(json, Data.class);
-            if (data != null) {
-                height = data.height;
-                width = data.width;
-                multiplier = data.multiplier;
-                customSize = data.customSize;
-                precise = data.precise;
-            }
-        } catch (IOException e) {
-            LOGGER.error("Failed to load config", e);
-        }
-
-    }
-
-    private static Data toData() {
-        Data data = new Data();
-        data.height = height;
-        data.width = width;
-        data.customSize = customSize;
-        data.multiplier = multiplier;
-        data.precise = precise;
-        return data;
-    }
-
-    public static void saveConfig() {
-        try {
-            Data data = toData();
-            Files.createDirectory(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID));
-            Files.writeString(CONFIG_PATH, GSON.toJson(data));
-        } catch (IOException e) {
-            LOGGER.error("Failed to save config", e);
-        }
-    }
-
-    private static class Data {
-        public boolean customSize;
-        public float multiplier;
-        public boolean precise;
-        int height;
-        int width;
-    }
 
     public static class FrameDragListener extends MouseAdapter {
         private final JFrame frame;
