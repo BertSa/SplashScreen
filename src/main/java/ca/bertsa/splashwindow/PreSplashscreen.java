@@ -27,12 +27,19 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
     public static final String MOD_ID = "splashscreen";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("splashscreen/option.json");
+    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "/option.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static int width = 500;
-    private static int height = 100;
-    private static boolean customSize = false;
+    private static final boolean DEFAULT_CUSTOMSIZE = false;
+    private static final boolean DEFAULT_PRECISE = false;
+    private static final float DEFAULT_MULTIPLIER = 1;
+
+
+    private static int width;
+    private static int height;
+    private static boolean customSize = DEFAULT_CUSTOMSIZE;
+    private static boolean precise = DEFAULT_PRECISE;
+    private static float multiplier = DEFAULT_MULTIPLIER;
 
     public static JFrame frame;
 
@@ -51,8 +58,8 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         frame = new JFrame("Minecraft");
 
         BufferedImage bi;
-        if (Files.exists(FabricLoader.getInstance().getConfigDir().resolve("splashscreen/" + PNG_NAME))) {
-            File file = FabricLoader.getInstance().getConfigDir().resolve("splashscreen/" + PNG_NAME).toFile();
+        if (Files.exists(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "/" + PNG_NAME))) {
+            File file = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "/" + PNG_NAME).toFile();
             bi = ImageIO.read(file);
         } else {
             InputStream stream = PreSplashscreen.class.getResourceAsStream("/assets/" + PNG_NAME);
@@ -63,6 +70,9 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         if (!customSize) {
             height = bi.getHeight();
             width = bi.getWidth();
+        } else if (!precise) {
+            height = Math.round(bi.getHeight() * multiplier);
+            width = Math.round(bi.getWidth() * multiplier);
         }
 
         ImageIcon img = new ImageIcon(bi.getScaledInstance(width, height, 4));
@@ -103,7 +113,9 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
             if (data != null) {
                 height = data.height;
                 width = data.width;
+                multiplier = data.multiplier;
                 customSize = data.customSize;
+                precise = data.precise;
             }
         } catch (IOException e) {
             LOGGER.error("Failed to load config", e);
@@ -116,13 +128,15 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         data.height = height;
         data.width = width;
         data.customSize = customSize;
+        data.multiplier = multiplier;
+        data.precise = precise;
         return data;
     }
 
     public static void saveConfig() {
         try {
             Data data = toData();
-            Files.createDirectory(FabricLoader.getInstance().getConfigDir().resolve("splashscreen"));
+            Files.createDirectory(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID));
             Files.writeString(CONFIG_PATH, GSON.toJson(data));
         } catch (IOException e) {
             LOGGER.error("Failed to save config", e);
@@ -131,6 +145,8 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
 
     private static class Data {
         public boolean customSize;
+        public float multiplier;
+        public boolean precise;
         int height;
         int width;
     }
