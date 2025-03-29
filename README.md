@@ -2,7 +2,7 @@
 
 ## Description
 
-This mod a splashscreen before the game launches. The splash logo can be customised.
+This mod add a splashscreen before the game launches. The splash logo can be customised.
 To do so, simply put the image named `splash.png` in the config folder `/config/splashscreen/`.
 To change the size of the image you can use the settings in the game or change directly the values in `options.json`
 
