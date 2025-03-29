@@ -56,8 +56,7 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
             bi = ImageIO.read(stream);
         }
 
-        int h;
-        int w;
+        int w, h;
         switch (config.state) {
             case Precise:
                 h = config.height;
@@ -70,9 +69,8 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
             default:
                 h = config.height = bi.getHeight();
                 w = config.width = bi.getWidth();
+                break;
         }
-
-        LOGGER.info(h + "x" + w);
 
         ImageIcon img = new ImageIcon(bi.getScaledInstance(w, h, Image.SCALE_SMOOTH));
 
@@ -82,12 +80,11 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
         label.setIcon(img);
         label.setOpaque(true);
 
-        frame.getContentPane().setBackground(new Color(1.0F, 1.0F, 1.0F, 0.0F));
-
         PreSplashscreen.FrameDragListener frameDragListener = new PreSplashscreen.FrameDragListener(frame);
         frame.addMouseListener(frameDragListener);
         frame.addMouseMotionListener(frameDragListener);
 
+        frame.getContentPane().setBackground(new Color(1.0F, 1.0F, 1.0F, 0.0F));
         frame.setType(Type.UTILITY);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(w, h);
@@ -109,12 +106,12 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
             this.frame = frame;
         }
 
-        public void mouseReleased(MouseEvent e) {
-            this.coords = null;
-        }
-
         public void mousePressed(MouseEvent e) {
             this.coords = e.getPoint();
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            this.coords = null;
         }
 
         public void mouseDragged(MouseEvent e) {

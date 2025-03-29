@@ -2,7 +2,6 @@ package ca.bertsa.splashscreen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,8 +14,6 @@ import static com.mojang.text2speech.Narrator.LOGGER;
 public class SplashScreenConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path CONFIG_PATH = CONFIG_DIR.resolve(MOD_ID + "/option.json");
-
-
 
     private static SplashConfig config;
 
@@ -46,8 +43,8 @@ public class SplashScreenConfig {
 
     public static void saveConfig() {
         try {
-            if (!Files.exists(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID))) {
-                Files.createDirectories(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID));
+            if (!Files.exists(CONFIG_DIR.resolve(MOD_ID))) {
+                Files.createDirectories(CONFIG_DIR.resolve(MOD_ID));
             }
             Files.writeString(CONFIG_PATH, GSON.toJson(config));
         } catch (IOException e) {

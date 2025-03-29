@@ -30,15 +30,12 @@ public class ModMenuIntegration implements ModMenuApi {
                 .setSaveConsumer(customizeState -> config.state = customizeState)
                 .build());
         general.addEntry(eb.startFloatField(Text.literal("Multiplier"), config.multiplier)
-                .setDefaultValue(1)
                 .setSaveConsumer(val -> config.multiplier = val)
                 .build());
         general.addEntry(eb.startIntField(Text.literal("Width"), config.width)
-                .setDefaultValue(1)
                 .setSaveConsumer(val -> config.width = val)
                 .build());
         general.addEntry(eb.startIntField(Text.literal("Height"), config.height)
-                .setDefaultValue(1)
                 .setSaveConsumer(val -> config.height = val)
                 .build());
 
