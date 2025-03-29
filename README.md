@@ -11,3 +11,7 @@ To change the size of the image you can use the settings in the game or change d
 - To change the width and height put the state on `Precise` and change the values of `width` and `height`.
 
 - To keep the image the same keep the state `Off`
+
+![Demo](https://github.com/BertSa/BertSa/blob/main/resources/minecraft_projects/splashscreen/splashDemo.png)
+![Demo](https://github.com/BertSa/BertSa/blob/main/resources/minecraft_projects/splashscreen/settings.png)
+![Demo](https://github.com/BertSa/BertSa/blob/main/resources/minecraft_projects/splashscreen/splashDemoCustom.png)
