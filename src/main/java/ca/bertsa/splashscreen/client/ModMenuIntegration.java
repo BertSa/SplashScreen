@@ -1,5 +1,7 @@
-package ca.bertsa.splashscreen;
+package ca.bertsa.splashscreen.client;
 
+import ca.bertsa.splashscreen.CustomizeState;
+import ca.bertsa.splashscreen.SplashScreenConfig;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -22,20 +24,20 @@ public class ModMenuIntegration implements ModMenuApi {
         SplashScreenConfig.SplashConfig config = SplashScreenConfig.getConfig();
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
-                .setTitle(Text.literal(title));
-        ConfigCategory general = builder.getOrCreateCategory(Text.literal("General"));
+                .setTitle(Text.of(title));
+        ConfigCategory general = builder.getOrCreateCategory(Text.of("General"));
         ConfigEntryBuilder eb = builder.entryBuilder();
 
-        general.addEntry(eb.startEnumSelector(Text.literal("Customize"), CustomizeState.class, config.state)
+        general.addEntry(eb.startEnumSelector(Text.of("Customize"), CustomizeState.class, config.state)
                 .setSaveConsumer(customizeState -> config.state = customizeState)
                 .build());
-        general.addEntry(eb.startFloatField(Text.literal("Multiplier"), config.multiplier)
+        general.addEntry(eb.startFloatField(Text.of("Multiplier"), config.multiplier)
                 .setSaveConsumer(val -> config.multiplier = val)
                 .build());
-        general.addEntry(eb.startIntField(Text.literal("Width"), config.width)
+        general.addEntry(eb.startIntField(Text.of("Width"), config.width)
                 .setSaveConsumer(val -> config.width = val)
                 .build());
-        general.addEntry(eb.startIntField(Text.literal("Height"), config.height)
+        general.addEntry(eb.startIntField(Text.of("Height"), config.height)
                 .setSaveConsumer(val -> config.height = val)
                 .build());
 

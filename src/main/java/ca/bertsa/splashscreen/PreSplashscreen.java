@@ -3,8 +3,6 @@ package ca.bertsa.splashscreen;
 import ca.bertsa.splashscreen.SplashScreenConfig.SplashConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,7 +19,6 @@ import java.nio.file.Path;
 
 public class PreSplashscreen implements PreLaunchEntrypoint {
     public static final String MOD_ID = "splashscreen";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final Path CONFIG_DIR = FabricLoader.getInstance().getConfigDir();
 
     private static final String PNG_NAME = "splash.png";
@@ -32,8 +29,6 @@ public class PreSplashscreen implements PreLaunchEntrypoint {
     private SplashConfig config;
 
     public void onPreLaunch() {
-        LOGGER.info("Pre Launch");
-
         SplashScreenConfig.loadConfig();
         config = SplashScreenConfig.getConfig();
         try {
