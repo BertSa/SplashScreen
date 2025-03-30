@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "splashwindow",
+  "id": "splashscreen",
   "version": "${version}",
-  "name": "SplashWindow",
+  "name": "Splashscreen",
   "description": "",
   "authors": ["Samuel Bertrand"],
   "contact": {},
@@ -17,15 +17,15 @@
       "ca.bertsa.splashscreen.Splashscreen"
     ],
     "modmenu": [
-      "ca.bertsa.splashscreen.ModMenuIntegration"
+      "ca.bertsa.splashscreen.client.ModMenuIntegration"
     ]
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
-    "minecraft": "~1.21.4"
+    "minecraft": ">=${minecraft_version}"
   },
   "suggests": {
-    "mod-menu": "~13.0.2"
+    "mod-menu": ">=1.16.23"
   }
 }

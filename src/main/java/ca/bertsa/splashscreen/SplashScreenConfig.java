@@ -6,10 +6,10 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static ca.bertsa.splashscreen.PreSplashscreen.CONFIG_DIR;
 import static ca.bertsa.splashscreen.PreSplashscreen.MOD_ID;
-import static com.mojang.text2speech.Narrator.LOGGER;
 
 public class SplashScreenConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -24,19 +24,17 @@ public class SplashScreenConfig {
     public static void loadConfig() {
 
         if (!Files.exists(CONFIG_PATH)) {
-            LOGGER.info("Creating config file");
             config = new SplashConfig();
             saveConfig();
             return;
         }
         try {
-            String json = Files.readString(CONFIG_PATH);
+            String json = new String(Files.readAllBytes(Paths.get(CONFIG_PATH.toUri())));
             SplashConfig data = GSON.fromJson(json, SplashConfig.class);
             if (data != null) {
                 config = data;
             }
-        } catch (IOException e) {
-            LOGGER.error("Failed to load config", e);
+        } catch (IOException ignored) {
         }
 
     }
@@ -46,9 +44,8 @@ public class SplashScreenConfig {
             if (!Files.exists(CONFIG_DIR.resolve(MOD_ID))) {
                 Files.createDirectories(CONFIG_DIR.resolve(MOD_ID));
             }
-            Files.writeString(CONFIG_PATH, GSON.toJson(config));
-        } catch (IOException e) {
-            LOGGER.error("Failed to save config", e);
+            Files.write(CONFIG_PATH, GSON.toJson(config).getBytes());
+        } catch (IOException ignored) {
         }
     }
 
