@@ -3,9 +3,14 @@
   "id": "splashscreen",
   "version": "${version}",
   "name": "Splashscreen",
-  "description": "",
-  "authors": ["Samuel Bertrand"],
-  "contact": {},
+  "description": "Add a splashscreen before the game starts!",
+  "authors": [
+    "Samuel Bertrand"
+  ],
+  "contact": {
+    "sources": "https://github.com/BertSa/SplashScreen",
+    "modrinth": "https://modrinth.com/mod/splashscreen"
+  },
   "license": "MIT",
   "icon": "assets/splashscreen/icon.png",
   "environment": "client",
